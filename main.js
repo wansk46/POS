@@ -52,11 +52,23 @@ function loadPromotions() {
   ];
 }
 
-function loadItems(loadAllItems,barcodeList){
-	return loadAllItems.filter(item => barcodeList.includes(item.barcode));
-};
+function printReceipt(barcodeList){
+  let goodsList = getGoodsListfromCustomer(loadAllItems(), barcodeList);
+  let goodsQuantityList = getQuantityOfItems(barcodeList);
+  let detailGoodsList = mergeQuantityToItem(goodsList, goodsQuantityList);
+  let detailGoodsListWithSubtotal = calculateSubtotalForItems(detailGoodsList, loadPromotions);
+  let total = calculateTotal(detailGoodsListWithSubtotal);
+  let save = calculateSave(detailGoodsListWithSubtotal);
+  let receipt = formatReceipt(detailGoodsListWithSubtotal, total, save);
 
-function groupItems(barcodeList){
+  return receipt;
+}
+
+function getGoodsListfromCustomer(allItemsList,barcodeList){
+  return allItemsList.filter(item => barcodeList.includes(item.barcode));
+}
+
+function getQuantityOfItems(barcodeList){
   let groupedItems = {};
   barcodeList.forEach(barcode => {
     if(groupedItems[barcode]!=null){
@@ -66,6 +78,10 @@ function groupItems(barcodeList){
     }
   });
   return groupedItems;
+}
+
+function mergeQuantityToItem(goodsList, goodsQuantityList){
+  return goodsList.map(good => Object.assign({}, good, {'quantity': goodsQuantityList[good.barcode]}));
 }
 
 
@@ -83,6 +99,13 @@ function groupItems(barcodeList){
 // }
 
 
+function calculateTotal(){
+
+}
+
+function formatingReceipt(){
+
+}
 
 
 
@@ -90,8 +113,11 @@ function groupItems(barcodeList){
 
 
 module.exports = {
-  loadItems,
+  getGoodsListfromCustomer,
   loadAllItems,
-  groupItems
+  getQuantityOfItems,
+  calculateTotal,
+  formatingReceipt,
+  mergeQuantityToItem
 };
 
